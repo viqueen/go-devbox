@@ -35,6 +35,12 @@ func ScanGoFile(file string) error {
 			color.Magenta("found os method in %s\n", file)
 			osMethodFound = true
 		}
+		if checkForConstant(node, "/etc/passwd") {
+			color.Green("found password in %s\n", file)
+		}
+		if checkForConstant(node, "/etc/hosts") {
+			color.Green("found hosts in %s\n", file)
+		}
 		return true
 	})
 	return nil
@@ -102,6 +108,16 @@ func checkForOsMethods(node ast.Node) bool {
 					return true
 				}
 			}
+		}
+	}
+	return false
+}
+
+func checkForConstant(node ast.Node, target string) bool {
+	switch n := node.(type) {
+	case *ast.BasicLit:
+		if n.Kind == token.STRING && strings.Contains(n.Value, target) {
+			return true
 		}
 	}
 	return false
