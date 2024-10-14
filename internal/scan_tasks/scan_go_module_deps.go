@@ -7,7 +7,12 @@ import (
 	"strings"
 )
 
-func ScanGoModuleDeps(enabledChecks []Check) error {
+type ScanGoModuleDepsOptions struct {
+	EnabledChecks []Check
+	Verbose       bool
+}
+
+func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -23,7 +28,11 @@ func ScanGoModuleDeps(enabledChecks []Check) error {
 			continue
 		}
 		target := parts[0]
-		_ = ScanGoModule(target, enabledChecks)
+		_ = ScanGoModule(ScanGoModuleOptions{
+			Module:        target,
+			EnabledChecks: opts.EnabledChecks,
+			Verbose:       opts.Verbose,
+		})
 	}
 	return nil
 }

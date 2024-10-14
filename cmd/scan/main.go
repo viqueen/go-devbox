@@ -15,8 +15,16 @@ var scanModCmd = &cobra.Command{
 	Short: "scan a go module",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		checks := cmd.Flag("checks").Value.String()
+		verbose, err := cmd.Flags().GetBool("verbose")
+		if err != nil {
+			return err
+		}
 		target := args[0]
-		return scantasks.ScanGoModule(target, scantasks.ParseChecks(checks))
+		return scantasks.ScanGoModule(scantasks.ScanGoModuleOptions{
+			Module:        target,
+			EnabledChecks: scantasks.ParseChecks(checks),
+			Verbose:       verbose,
+		})
 	},
 }
 
@@ -25,12 +33,20 @@ var scanDepsCmd = &cobra.Command{
 	Short: "scan dependencies of a go module",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		checks := cmd.Flag("checks").Value.String()
-		return scantasks.ScanGoModuleDeps(scantasks.ParseChecks(checks))
+		verbose, err := cmd.Flags().GetBool("verbose")
+		if err != nil {
+			return err
+		}
+		return scantasks.ScanGoModuleDeps(scantasks.ScanGoModuleDepsOptions{
+			EnabledChecks: scantasks.ParseChecks(checks),
+			Verbose:       verbose,
+		})
 	},
 }
 
 func init() {
 	rootCmd.PersistentFlags().StringP("checks", "c", "", "comma separated list of checks to run")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 	rootCmd.AddCommand(scanModCmd)
 	rootCmd.AddCommand(scanDepsCmd)
 }
