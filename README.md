@@ -29,7 +29,7 @@ goscan mod "github.com/your/module"
 - scan a go module for a given set of checks
 
 ```bash
-goscan mod "github.com/your/module" --checks http,os
+goscan mod "github.com/your/module" --checks http,os --verbose
 ```
 
 - scan dependencies of a go module
@@ -41,5 +41,5 @@ goscan deps
 - scan dependencies of a go module for a given set of checks
 
 ```bash
-goscan deps --checks net,exec
+goscan deps --checks net,exec --verbose
 ```
