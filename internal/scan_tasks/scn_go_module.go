@@ -9,9 +9,17 @@ import (
 	"strings"
 )
 
-func ScanGoModule(module string, enabledChecks []Check) error {
-	log.Printf("Scanning module: %s\n", module)
-	info, err := getModInfo(module)
+type ScanGoModuleOptions struct {
+	Module        string
+	EnabledChecks []Check
+	Verbose       bool
+}
+
+func ScanGoModule(opts ScanGoModuleOptions) error {
+	if opts.Verbose {
+		log.Printf("Scanning module: %s\n", opts.Module)
+	}
+	info, err := getModInfo(opts.Module)
 	if err != nil {
 		return err
 	}
@@ -20,8 +28,8 @@ func ScanGoModule(module string, enabledChecks []Check) error {
 		return err
 	}
 	for _, file := range goFiles {
-		scanErr := ScanGoFile(file, enabledChecks)
-		if scanErr != nil {
+		scanErr := ScanGoFile(file, opts.EnabledChecks)
+		if scanErr != nil && opts.Verbose {
 			log.Printf("Error scanning file %s: %v\n", file, scanErr)
 		}
 	}
