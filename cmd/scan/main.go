@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/viqueen/go-devbox/internal/scan_tasks"
+	scantasks "github.com/viqueen/go-devbox/internal/scan_tasks"
 	"os"
 )
 
@@ -14,8 +14,9 @@ var scanModCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Short: "scan a go module",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		checks := cmd.Flag("checks").Value.String()
 		target := args[0]
-		return scan_tasks.ScanGoModule(target)
+		return scantasks.ScanGoModule(target, scantasks.ParseChecks(checks))
 	},
 }
 
@@ -23,11 +24,13 @@ var scanDepsCmd = &cobra.Command{
 	Use:   "deps",
 	Short: "scan dependencies of a go module",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return scan_tasks.ScanGoModuleDeps()
+		checks := cmd.Flag("checks").Value.String()
+		return scantasks.ScanGoModuleDeps(scantasks.ParseChecks(checks))
 	},
 }
 
 func init() {
+	rootCmd.PersistentFlags().StringP("checks", "c", "", "comma separated list of checks to run")
 	rootCmd.AddCommand(scanModCmd)
 	rootCmd.AddCommand(scanDepsCmd)
 }

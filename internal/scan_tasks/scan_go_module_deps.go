@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func ScanGoModuleDeps() error {
+func ScanGoModuleDeps(enabledChecks []Check) error {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return err
@@ -23,7 +23,7 @@ func ScanGoModuleDeps() error {
 			continue
 		}
 		target := parts[0]
-		_ = ScanGoModule(target)
+		_ = ScanGoModule(target, enabledChecks)
 	}
 	return nil
 }

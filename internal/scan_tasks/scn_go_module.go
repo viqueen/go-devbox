@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func ScanGoModule(module string) error {
+func ScanGoModule(module string, enabledChecks []Check) error {
 	log.Printf("Scanning module: %s\n", module)
 	info, err := getModInfo(module)
 	if err != nil {
@@ -20,7 +20,7 @@ func ScanGoModule(module string) error {
 		return err
 	}
 	for _, file := range goFiles {
-		scanErr := ScanGoFile(file)
+		scanErr := ScanGoFile(file, enabledChecks)
 		if scanErr != nil {
 			log.Printf("Error scanning file %s: %v\n", file, scanErr)
 		}
