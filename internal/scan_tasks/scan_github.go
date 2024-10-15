@@ -29,6 +29,7 @@ func ScanGithub(opts ScanGithubOptions) error {
 			Module:        module,
 			EnabledChecks: opts.EnabledChecks,
 			Verbose:       opts.Verbose,
+			WithGet:       true,
 		})
 	}
 	return nil

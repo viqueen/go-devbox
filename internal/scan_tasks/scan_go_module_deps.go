@@ -11,6 +11,7 @@ type ScanGoModuleDepsOptions struct {
 	Excludes      []string
 	EnabledChecks []Check
 	Verbose       bool
+	WithTidy      bool
 }
 
 func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
@@ -21,9 +22,11 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 	log.Printf("Scanning deps for: %s\n", cwd)
 	log.Printf("with checks: %s\n", opts.EnabledChecks)
 	log.Printf("excluding: %s\n", opts.Excludes)
-	err = gotasks.ModTidy()
-	if err != nil {
-		return err
+	if opts.WithTidy {
+		err = gotasks.ModTidy()
+		if err != nil {
+			return err
+		}
 	}
 	deps, err := gotasks.ListAll()
 	if err != nil {
@@ -45,6 +48,7 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 			Module:        target,
 			EnabledChecks: opts.EnabledChecks,
 			Verbose:       opts.Verbose,
+			WithGet:       false,
 		})
 	}
 	return nil

@@ -15,6 +15,15 @@ func ModTidy() error {
 	return nil
 }
 
+func Get(module string) error {
+	cmd := exec.Command("go", "get", module)
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type ModInfo struct {
 	Dir string `json:"Dir"`
 }

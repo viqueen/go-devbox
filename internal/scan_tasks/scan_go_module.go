@@ -12,11 +12,18 @@ type ScanGoModuleOptions struct {
 	Module        string
 	EnabledChecks []Check
 	Verbose       bool
+	WithGet       bool
 }
 
 func ScanGoModule(opts ScanGoModuleOptions) error {
 	if opts.Verbose {
 		log.Printf("Scanning module: %s\n", opts.Module)
+	}
+	if opts.WithGet {
+		err := gotasks.Get(opts.Module)
+		if err != nil {
+			return err
+		}
 	}
 	info, err := gotasks.List(opts.Module)
 	if err != nil {
