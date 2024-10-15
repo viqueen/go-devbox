@@ -1,9 +1,9 @@
 package scan_tasks
 
 import (
+	gotasks "github.com/viqueen/go-devbox/internal/go_tasks"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -11,6 +11,7 @@ type ScanGoModuleDepsOptions struct {
 	Excludes      []string
 	EnabledChecks []Check
 	Verbose       bool
+	WithTidy      bool
 }
 
 func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
@@ -21,7 +22,13 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 	log.Printf("Scanning deps for: %s\n", cwd)
 	log.Printf("with checks: %s\n", opts.EnabledChecks)
 	log.Printf("excluding: %s\n", opts.Excludes)
-	deps, err := listGoModuleDeps()
+	if opts.WithTidy {
+		err = gotasks.ModTidy()
+		if err != nil {
+			return err
+		}
+	}
+	deps, err := gotasks.ListAll()
 	if err != nil {
 		return err
 	}
@@ -41,25 +48,8 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 			Module:        target,
 			EnabledChecks: opts.EnabledChecks,
 			Verbose:       opts.Verbose,
+			WithGet:       false,
 		})
 	}
 	return nil
-}
-
-func excludeTarget(excludes []string, target string) bool {
-	for _, exclude := range excludes {
-		if exclude != "" && strings.Contains(target, exclude) {
-			return true
-		}
-	}
-	return false
-}
-
-func listGoModuleDeps() ([]string, error) {
-	cmd := exec.Command("go", "list", "-m", "all")
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	return strings.Split(string(output), "\n"), nil
 }
