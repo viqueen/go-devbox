@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	scantasks "github.com/viqueen/go-devbox/internal/scan_tasks"
 	"os"
+	"strings"
 )
 
 var rootCmd = &cobra.Command{}
@@ -34,11 +35,13 @@ var scanDepsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		checks := cmd.Flag("checks").Value.String()
 		verbose, err := cmd.Flags().GetBool("verbose")
+		excludes := cmd.Flag("exclude").Value.String()
 		if err != nil {
 			return err
 		}
 		return scantasks.ScanGoModuleDeps(scantasks.ScanGoModuleDepsOptions{
 			EnabledChecks: scantasks.ParseChecks(checks),
+			Excludes:      strings.Split(excludes, ","),
 			Verbose:       verbose,
 		})
 	},
@@ -47,6 +50,7 @@ var scanDepsCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().StringP("checks", "c", "", "comma separated list of checks to run")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
+	rootCmd.PersistentFlags().StringP("exclude", "e", "", "comma separated list of module providers to exclude")
 	rootCmd.AddCommand(scanModCmd)
 	rootCmd.AddCommand(scanDepsCmd)
 }
