@@ -47,12 +47,31 @@ var scanDepsCmd = &cobra.Command{
 	},
 }
 
+var scanGitHubCmd = &cobra.Command{
+	Use:   "github",
+	Short: "scan a github go module",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		checks := cmd.Flag("checks").Value.String()
+		verbose, err := cmd.Flags().GetBool("verbose")
+		excludes := cmd.Flag("exclude").Value.String()
+		if err != nil {
+			return err
+		}
+		return scantasks.ScanGithub(scantasks.ScanGithubOptions{
+			EnabledChecks: scantasks.ParseChecks(checks),
+			Excludes:      strings.Split(excludes, ","),
+			Verbose:       verbose,
+		})
+	},
+}
+
 func init() {
 	rootCmd.PersistentFlags().StringP("checks", "c", "", "comma separated list of checks to run")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringP("exclude", "e", "", "comma separated list of module providers to exclude")
 	rootCmd.AddCommand(scanModCmd)
 	rootCmd.AddCommand(scanDepsCmd)
+	rootCmd.AddCommand(scanGitHubCmd)
 }
 
 func main() {

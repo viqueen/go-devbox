@@ -46,15 +46,6 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 	return nil
 }
 
-func excludeTarget(excludes []string, target string) bool {
-	for _, exclude := range excludes {
-		if exclude != "" && strings.Contains(target, exclude) {
-			return true
-		}
-	}
-	return false
-}
-
 func listGoModuleDeps() ([]string, error) {
 	cmd := exec.Command("go", "list", "-m", "all")
 	output, err := cmd.Output()
