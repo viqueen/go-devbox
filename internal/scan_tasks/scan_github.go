@@ -7,6 +7,7 @@ import (
 )
 
 type ScanGithubOptions struct {
+	Query         string
 	Excludes      []string
 	EnabledChecks []Check
 	Verbose       bool
@@ -14,7 +15,7 @@ type ScanGithubOptions struct {
 
 func ScanGithub(opts ScanGithubOptions) error {
 	githubClient := github.NewClient()
-	repos, err := githubClient.SearchRepositories("")
+	repos, err := githubClient.SearchRepositories(opts.Query)
 	if err != nil {
 		return err
 	}

@@ -58,8 +58,9 @@ var scanGitHubCmd = &cobra.Command{
 	Short: "scan a github go module",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		checks := cmd.Flag("checks").Value.String()
-		verbose, err := cmd.Flags().GetBool("verbose")
 		excludes := cmd.Flag("exclude").Value.String()
+		query := cmd.Flag("query").Value.String()
+		verbose, err := cmd.Flags().GetBool("verbose")
 		if err != nil {
 			return err
 		}
@@ -67,6 +68,7 @@ var scanGitHubCmd = &cobra.Command{
 			EnabledChecks: scantasks.ParseChecks(checks),
 			Excludes:      strings.Split(excludes, ","),
 			Verbose:       verbose,
+			Query:         query,
 		})
 	},
 }
@@ -75,7 +77,9 @@ func init() {
 	rootCmd.PersistentFlags().StringP("checks", "c", "", "comma separated list of checks to run")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().StringP("exclude", "e", "", "comma separated list of module providers to exclude")
+
 	scanDepsCmd.Flags().BoolP("tidy", "t", false, "run go mod tidy before scanning")
+	scanGitHubCmd.Flags().StringP("query", "q", "", "github search query")
 
 	rootCmd.AddCommand(scanModCmd)
 	rootCmd.AddCommand(scanDepsCmd)
