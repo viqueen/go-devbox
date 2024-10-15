@@ -17,8 +17,8 @@ func ScanGoFile(file string, enabledChecks []Check) error {
 	checkFound := make(map[Check]bool)
 	ast.Inspect(astFile, func(node ast.Node) bool {
 		for _, check := range enabledChecks {
-			if !checkFound[check] && checksMap[check](node) {
-				color.Red("found %s in %s\n", check, file)
+			if !checkFound[check] && checksFn[check](node) {
+				checksColor[check]("found %s in %s\n", check, file)
 				checkFound[check] = true
 			}
 		}
