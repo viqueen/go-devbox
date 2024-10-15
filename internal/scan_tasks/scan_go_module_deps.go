@@ -8,6 +8,7 @@ import (
 )
 
 type ScanGoModuleDepsOptions struct {
+	Excludes      []string
 	EnabledChecks []Check
 	Verbose       bool
 }
@@ -18,6 +19,8 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 		return err
 	}
 	log.Printf("Scanning deps for: %s\n", cwd)
+	log.Printf("with checks: %s\n", opts.EnabledChecks)
+	log.Printf("excluding: %s\n", opts.Excludes)
 	deps, err := listGoModuleDeps()
 	if err != nil {
 		return err
@@ -28,6 +31,12 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 			continue
 		}
 		target := parts[0]
+		if excludeTarget(opts.Excludes, target) {
+			if opts.Verbose {
+				log.Printf("Skipping excluded target: %s\n", target)
+			}
+			continue
+		}
 		_ = ScanGoModule(ScanGoModuleOptions{
 			Module:        target,
 			EnabledChecks: opts.EnabledChecks,
@@ -35,6 +44,15 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 		})
 	}
 	return nil
+}
+
+func excludeTarget(excludes []string, target string) bool {
+	for _, exclude := range excludes {
+		if exclude != "" && strings.Contains(target, exclude) {
+			return true
+		}
+	}
+	return false
 }
 
 func listGoModuleDeps() ([]string, error) {

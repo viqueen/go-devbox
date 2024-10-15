@@ -1,6 +1,7 @@
 package scan_tasks
 
 import (
+	"github.com/fatih/color"
 	"go/ast"
 	"strings"
 )
@@ -30,11 +31,18 @@ func ParseChecks(checks string) []Check {
 	return enabledChecks
 }
 
-var checksMap = map[Check]func(node ast.Node) bool{
+var checksFn = map[Check]func(node ast.Node) bool{
 	CheckExec: checkForExecCommand,
 	CheckNet:  checkForNetDial,
 	CheckHttp: checkForHttpMethods,
 	CheckOs:   checkForOsMethods,
+}
+
+var checksColor = map[Check]func(format string, args ...interface{}){
+	CheckExec: color.Red,
+	CheckNet:  color.HiMagenta,
+	CheckHttp: color.Cyan,
+	CheckOs:   color.HiRed,
 }
 
 func checkForExecCommand(node ast.Node) bool {
