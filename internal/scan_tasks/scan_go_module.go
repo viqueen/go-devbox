@@ -1,10 +1,9 @@
 package scan_tasks
 
 import (
-	"encoding/json"
+	gotasks "github.com/viqueen/go-devbox/internal/go_tasks"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -19,7 +18,7 @@ func ScanGoModule(opts ScanGoModuleOptions) error {
 	if opts.Verbose {
 		log.Printf("Scanning module: %s\n", opts.Module)
 	}
-	info, err := getModInfo(opts.Module)
+	info, err := gotasks.List(opts.Module)
 	if err != nil {
 		return err
 	}
@@ -34,25 +33,6 @@ func ScanGoModule(opts ScanGoModuleOptions) error {
 		}
 	}
 	return nil
-}
-
-type modInfo struct {
-	Dir string `json:"Dir"`
-}
-
-func getModInfo(module string) (*modInfo, error) {
-	cmd := exec.Command("go", "list", "-json", module)
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-
-	var info modInfo
-	if jsonErr := json.Unmarshal(output, &info); jsonErr != nil {
-		return nil, jsonErr
-	}
-
-	return &info, nil
 }
 
 func listGoFiles(moduleDir string) ([]string, error) {

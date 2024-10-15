@@ -1,9 +1,9 @@
 package scan_tasks
 
 import (
+	gotasks "github.com/viqueen/go-devbox/internal/go_tasks"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -21,7 +21,11 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 	log.Printf("Scanning deps for: %s\n", cwd)
 	log.Printf("with checks: %s\n", opts.EnabledChecks)
 	log.Printf("excluding: %s\n", opts.Excludes)
-	deps, err := listGoModuleDeps()
+	err = gotasks.ModTidy()
+	if err != nil {
+		return err
+	}
+	deps, err := gotasks.ListAll()
 	if err != nil {
 		return err
 	}
@@ -44,13 +48,4 @@ func ScanGoModuleDeps(opts ScanGoModuleDepsOptions) error {
 		})
 	}
 	return nil
-}
-
-func listGoModuleDeps() ([]string, error) {
-	cmd := exec.Command("go", "list", "-m", "all")
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	return strings.Split(string(output), "\n"), nil
 }
